@@ -38,7 +38,7 @@ namespace adventofcode
                         var zipped = box1.Zip(box2, (char1, char2) => char1 == char2).ToList();
                         if (zipped.Count(x => !x) == 1)
                         {
-                            return new string(box1.Remove(zipped.IndexOf(false), 1));
+                            return box1.Remove(zipped.IndexOf(false), 1);
                         }
                     }
                 }
