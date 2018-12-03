@@ -5,15 +5,45 @@ namespace adventofcode
 {
     public class DayThree : IProblemRunner
     {
+        private Claim[] claims;
+        private int[][] fabricAreaClaims;
+
         public string InvokeGold()
         {
-            return "not implemented";
+            // Assumes silver has been run
+            foreach (var claim in claims)
+            {
+                var conflicted = false;
+                for (var x = claim.x; x < claim.x + claim.width; x++)
+                {
+                    for (var y = claim.y; y < claim.y + claim.height; y++)
+                    {
+                        if (fabricAreaClaims[y][x] > 1)
+                        {
+                            conflicted = true;
+                            break;
+                        }
+                    }
+
+                    if (conflicted)
+                    {
+                        break;
+                    }
+                }
+
+                if (!conflicted)
+                {
+                    return $"Here is the cloth ID: {claim.number}.";
+                }
+            }
+
+            return "Advent of Code Santa lied! All cloth pieces conflict.";
         }
 
         public string InvokeSilver()
         {
             var claimStrs = File.ReadAllLines("../input/day3.txt");
-            var claims = new Claim[claimStrs.Length];
+            claims = new Claim[claimStrs.Length];
             var maxClothWidth = 0;
             var maxClothHeight = 0;
             for (var i = 0; i < claimStrs.Length; i++)
@@ -41,7 +71,7 @@ namespace adventofcode
                 }
             }
 
-            var fabricAreaClaims = new int[maxClothHeight][];
+            fabricAreaClaims = new int[maxClothHeight][];
             for (var i = 0; i < fabricAreaClaims.Length; i ++)
             {
                 fabricAreaClaims[i] = new int[maxClothWidth];
