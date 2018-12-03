@@ -8,7 +8,7 @@ namespace adventofcode
     {
         public string InvokeSilver()
         {
-            var lines = File.ReadAllLines("./day2.txt");
+            var lines = File.ReadAllLines("../input/day2.txt");
             var twoMatch = 0;
             var threeMatch = 0;
             foreach (var box in lines)
@@ -28,7 +28,7 @@ namespace adventofcode
 
         public string InvokeGold()
         {
-            var lines = File.ReadAllLines("./day2.txt");
+            var lines = File.ReadAllLines("../input/day2.txt");
             foreach (var box1 in lines)
             {
                 foreach (var box2 in lines)

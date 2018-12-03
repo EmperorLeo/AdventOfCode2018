@@ -8,7 +8,7 @@ namespace adventofcode
     {
         static void Main(string[] args)
         {
-            IProblemRunner runner = new DayTwo();
+            IProblemRunner runner = new DayOne();
             Console.WriteLine(runner.InvokeSilver());
             Console.WriteLine(runner.InvokeGold());
         }

@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="../input/**/*.*" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
