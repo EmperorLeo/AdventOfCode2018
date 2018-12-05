@@ -1,20 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 )
 
-func main() {
+func day1() {
 	// Part 1
-	file, err := os.Open("../input/day1.txt")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
+	scanner, myFile := readFile("../input/day1.txt")
+	defer myFile.Close()
 	var frequencies []int
 	var freq int
 	for scanner.Scan() {
