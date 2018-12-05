@@ -65,7 +65,6 @@ namespace csharp
                 {
                     var groups = shiftMatch.Groups.ToArray();
                     var date = groups[1].Value.Split('-');
-                    Console.WriteLine("shift");
                     return new GuardTimestamp(
                         new DateTime(int.Parse(date[0]), int.Parse(date[1]), int.Parse(date[2]), int.Parse(groups[2].Value), int.Parse(groups[3].Value), 0),
                             int.Parse(groups[4].Value), true);
@@ -76,7 +75,6 @@ namespace csharp
                 {
                     var groups = sleepMatch.Groups.ToArray();
                     var date = groups[1].Value.Split('-');
-                    Console.WriteLine("sleep");
                     return new GuardTimestamp(
                         new DateTime(int.Parse(date[0]), int.Parse(date[1]), int.Parse(date[2]), int.Parse(groups[2].Value), int.Parse(groups[3].Value), 0),
                             groups[4].Value == "wakes up");
