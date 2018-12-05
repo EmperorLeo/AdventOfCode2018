@@ -21,9 +21,9 @@ namespace csharp
 
             var polymerLengthsPerIgnored = "abcdefghijklmnopqrstuvwxyz".Select(c =>
             {
-                return new { letter = c, length = GetResultingPolymerLength(c) };
+                return GetResultingPolymerLength(c);
             });
-            return $"Shortest possible: {polymerLengthsPerIgnored.Min(y => y.length)}";
+            return $"Shortest possible: {polymerLengthsPerIgnored.Min()}";
         }
 
         public string InvokeSilver()
