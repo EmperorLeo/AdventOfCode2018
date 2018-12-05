@@ -9,7 +9,7 @@ func day2() {
 	scanner, file := readFile("../input/day2.txt")
 	defer file.Close()
 	var twos, threes int
-	var lines []string
+	lines := make([]string, 0, 200)
 	for scanner.Scan() {
 		runeMap := make(map[rune]int)
 		val := scanner.Text()
