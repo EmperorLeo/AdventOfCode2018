@@ -63,7 +63,6 @@ namespace csharp
             }
 
             var ties = 0;
-            var disqualifiedSet = new HashSet<int>();
 
             for (var x = 0; x <= maxX; x++)
             {
@@ -91,16 +90,13 @@ namespace csharp
                     {
                         ties++;
                     }
-                    map[y][x] = isTie ? -1 : winnerId;
 
-                    if (!isTie && (x == 0 || y == 0 || x == maxX || y == maxY))
-                    {
-                        disqualifiedSet.Add(winnerId);
-                    }
+                    map[y][x] = isTie ? -1 : winnerId;
                 }
             }
 
             var totalAreaMap = new Dictionary<int, int>();
+            var disqualifiedSet = new HashSet<int>();
             for (var x = 0; x <= maxX; x++)
             {
                 for (var y = 0; y <= maxY; y++)
@@ -126,20 +122,6 @@ namespace csharp
             }
 
             var total = totalAreaMap.Values.Sum();
-            Console.WriteLine($"Total non-tied area: {total}");
-            Console.WriteLine($"Total ties: {ties}");
-            foreach (var x in totalAreaMap.Keys.OrderBy(x => x))
-            {
-                Console.WriteLine($"Key is {x} and value is {totalAreaMap[x]}");
-            }
-
-            foreach (var y in disqualifiedSet)
-            {
-                Console.WriteLine($"disqualified: {y}");
-            }
-
-            Console.WriteLine($"MaxX: {maxX}");
-            Console.WriteLine($"MaxY: {maxY}");
 
             disqualifiedSet.ToList().ForEach(x => totalAreaMap.Remove(x));
             return $"Largest non-infinite area is {totalAreaMap.Values.Max()}";
