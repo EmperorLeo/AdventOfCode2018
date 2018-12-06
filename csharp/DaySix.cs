@@ -29,6 +29,17 @@ namespace csharp
         private int maxX;
         private int maxY;
 
+        public DaySix()
+        {
+            points = File.ReadAllLines("../input/day6.txt").Select((x, i) =>
+            {
+                var split = x.Split(", ");
+                return new Coordinate(i, int.Parse(split[0]), int.Parse(split[1]));
+            });
+            maxY = points.Max(p => p.Y);
+            maxX = points.Max(p => p.X);
+        }
+
         public string InvokeGold()
         {
             var areaSize = 0;
@@ -48,14 +59,6 @@ namespace csharp
 
         public string InvokeSilver()
         {
-            points = File.ReadAllLines("../input/day6.txt").Select((x, i) =>
-            {
-                var split = x.Split(", ");
-                return new Coordinate(i, int.Parse(split[0]), int.Parse(split[1]));
-            });
-            maxY = points.Max(p => p.Y);
-            maxX = points.Max(p => p.X);
-
             var map = new int[maxY + 1][];
             for (var i = 0; i < map.Length; i ++)
             {
