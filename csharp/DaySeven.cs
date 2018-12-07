@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -24,6 +25,7 @@ namespace csharp
         private SortedList<string, string> _sortedList;
         private Dictionary<string, ICollection<string>> _graph;
         private Dictionary<string, ICollection<string>> _requirementsGraph;
+        private int _numVertices;
 
         public DaySeven()
         {
@@ -67,7 +69,58 @@ namespace csharp
 
         public string InvokeGold()
         {
-            return "not implemented";
+            Setup();
+            const int maxWorkers = 5;
+            var workers = 0;
+            var timer = 0;
+            var result = "";
+            var doneDict = new Dictionary<int, SortedList<string, string>>();
+            while (result.Length < _numVertices)
+            {
+                if (doneDict.ContainsKey(timer))
+                {
+                    foreach (var item in doneDict[timer])
+                    {
+                        var vertex = item.Value;
+                        result += vertex;
+
+                        if (_graph.ContainsKey(vertex))
+                        {
+                            var children = _graph[vertex];
+                            foreach (var child in children)
+                            {
+                                var requirements = _requirementsGraph[child];
+                                requirements.Remove(vertex);
+
+                                if (!requirements.Any())
+                                {
+                                    _sortedList.Add(child, child);
+                                }
+                            }
+                        }
+
+                        workers--;
+                    }
+                }
+
+                while (_sortedList.Count > 0 && workers < maxWorkers)
+                {
+                    workers++;
+
+                    var vertex = _sortedList.ElementAt(0).Value;
+                    _sortedList.RemoveAt(0);
+
+                    var doneTime = timer + (int)vertex[0] - 4;
+                    if (!doneDict.ContainsKey(doneTime))
+                    {
+                        doneDict.Add(doneTime, new SortedList<string, string>());
+                    }
+                    doneDict[doneTime].Add(vertex, vertex);
+                }
+                timer++;
+            }
+            // Note: have to subtract one second, because the timer increments an extra time after everything is done.
+            return $"Took {timer - 1} seconds.";
         }
 
         private void Setup()
@@ -99,6 +152,8 @@ namespace csharp
                 seenSet.Add(edge.End);
                 beginningSet.Remove(edge.End);
             }
+
+            _numVertices = seenSet.Count();
 
             _sortedList = new SortedList<string, string>();
             beginningSet.ToList().ForEach(x => _sortedList.Add(x, x));
