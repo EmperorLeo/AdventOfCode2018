@@ -48,20 +48,7 @@ namespace csharp
 
                 result += vertex;
 
-                if (_graph.ContainsKey(vertex))
-                {
-                    var children = _graph[vertex];
-                    foreach (var child in children)
-                    {
-                        var requirements = _requirementsGraph[child];
-                        requirements.Remove(vertex);
-
-                        if (!requirements.Any())
-                        {
-                            _sortedList.Add(child, child);
-                        }
-                    }
-                }
+                CompleteItem(vertex);
             }
 
             return result;
@@ -84,20 +71,7 @@ namespace csharp
                         var vertex = item.Value;
                         result += vertex;
 
-                        if (_graph.ContainsKey(vertex))
-                        {
-                            var children = _graph[vertex];
-                            foreach (var child in children)
-                            {
-                                var requirements = _requirementsGraph[child];
-                                requirements.Remove(vertex);
-
-                                if (!requirements.Any())
-                                {
-                                    _sortedList.Add(child, child);
-                                }
-                            }
-                        }
+                        CompleteItem(vertex);
 
                         workers--;
                     }
@@ -120,7 +94,7 @@ namespace csharp
                 timer++;
             }
             // Note: have to subtract one second, because the timer increments an extra time after everything is done.
-            return $"Took {timer - 1} seconds.";
+            return $"Took {timer - 1} seconds with order {result}.";
         }
 
         private void Setup()
@@ -157,6 +131,23 @@ namespace csharp
 
             _sortedList = new SortedList<string, string>();
             beginningSet.ToList().ForEach(x => _sortedList.Add(x, x));
+        }
+
+        private void CompleteItem(string vertex)
+        {
+            if (_graph.ContainsKey(vertex))
+            {
+                var children = _graph[vertex];
+                foreach (var child in children)
+                {
+                    var requirements = _requirementsGraph[child];
+                    requirements.Remove(vertex);
+                    if (!requirements.Any())
+                    {
+                        _sortedList.Add(child, child);
+                    }
+                }
+            }
         }
     }
 }
