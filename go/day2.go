@@ -6,15 +6,11 @@ import (
 
 func day2() {
 	// Part 1
-	scanner, file := readFile("../input/day2.txt")
-	defer file.Close()
+	lines := readFile("../input/day2.txt")
 	var twos, threes int
-	lines := make([]string, 0, 200)
-	for scanner.Scan() {
+	for _, line := range lines {
 		runeMap := make(map[rune]int)
-		val := scanner.Text()
-		lines = append(lines, val)
-		for _, char := range val {
+		for _, char := range line {
 			runeMap[char]++
 		}
 		var isTwo, isThree bool

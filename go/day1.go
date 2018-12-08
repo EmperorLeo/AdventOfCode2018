@@ -7,12 +7,11 @@ import (
 
 func day1() {
 	// Part 1
-	scanner, myFile := readFile("../input/day1.txt")
-	defer myFile.Close()
+	lines := readFile("../input/day1.txt")
 	var frequencies []int
 	var freq int
-	for scanner.Scan() {
-		val, _ := strconv.Atoi(scanner.Text())
+	for _, line := range lines {
+		val, _ := strconv.Atoi(line)
 		freq += val
 		frequencies = append(frequencies, val)
 	}

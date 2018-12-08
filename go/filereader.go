@@ -6,10 +6,18 @@ import (
 	"os"
 )
 
-func readFile(filepath string) (*bufio.Scanner, *os.File) {
+func readFile(filepath string) []string {
 	file, err := os.Open(filepath)
+	defer file.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
-	return bufio.NewScanner(file), file
+
+	scanner := bufio.NewScanner(file)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	return lines
 }
