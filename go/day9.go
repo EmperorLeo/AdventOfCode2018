@@ -5,39 +5,31 @@ import (
 )
 
 type marble struct {
-	value    int
-	previous *marble
-	next     *marble
+	value          int
+	previous, next *marble
 }
 
 type game struct {
-	currentMarble *marble
-	currentPlayer int
-	totalPlayers  int
-	scores        map[int]int
+	currentMarble               *marble
+	currentPlayer, totalPlayers int
+	scores                      map[int]int
 }
 
 func day9() {
 	input := readFile("../input/day9.txt")[0]
 	var players, points int
 	fmt.Sscanf(input, "%d players; last marble is worth %d points", &players, &points)
-	// Part 1
-	fastGame := game{&marble{0, nil, nil}, 1, players, make(map[int]int, players)}
-	for i := 1; i <= points; i++ {
-		fastGame.takeTurn(i)
+
+	// Play 2 games
+	for _, numPoints := range []int{points, points * 100} {
+		game := game{&marble{0, nil, nil}, 1, players, make(map[int]int, players)}
+		for i := 1; i <= numPoints; i++ {
+			game.takeTurn(i)
+		}
+
+		winner, score := game.getWinner()
+		fmt.Printf("The winning score is %d, and the winning player is %d.\n", score, winner)
 	}
-
-	winner, score := fastGame.getWinner()
-	fmt.Printf("The winning score is %d, and the winning player is %d.\n", score, winner)
-
-	// Part 2
-	slowGame := game{&marble{0, nil, nil}, 1, players, make(map[int]int, players)}
-	for i := 1; i <= points*100; i++ {
-		slowGame.takeTurn(i)
-	}
-
-	winner, score = slowGame.getWinner()
-	fmt.Printf("The winning score is %d, and the winning player is %d.\n", score, winner)
 }
 
 func (g *game) takeTurn(round int) {
@@ -84,13 +76,4 @@ func (g *game) getWinner() (int, int) {
 	}
 
 	return player, max
-}
-
-func (g *game) printCircle(round int) {
-	curMarble := g.currentMarble
-	for i := 0; i <= round; i++ {
-		fmt.Printf("%d ", curMarble.value)
-		curMarble = curMarble.next
-	}
-	fmt.Println()
 }
