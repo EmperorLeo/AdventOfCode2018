@@ -4,11 +4,16 @@ import (
 	"fmt"
 )
 
+type marble struct {
+	value    int
+	previous *marble
+	next     *marble
+}
+
 type game struct {
-	currentMarble int
+	currentMarble *marble
 	currentPlayer int
 	totalPlayers  int
-	circle        []int
 	scores        map[int]int
 }
 
@@ -17,7 +22,7 @@ func day9() {
 	var players, points int
 	fmt.Sscanf(input, "%d players; last marble is worth %d points", &players, &points)
 	// Part 1
-	fastGame := game{0, 1, players, []int{0}, make(map[int]int, players)}
+	fastGame := game{&marble{0, nil, nil}, 1, players, make(map[int]int, players)}
 	for i := 1; i <= points; i++ {
 		fastGame.takeTurn(i)
 	}
@@ -26,7 +31,7 @@ func day9() {
 	fmt.Printf("The winning score is %d, and the winning player is %d.\n", score, winner)
 
 	// Part 2
-	slowGame := game{0, 1, players, []int{0}, make(map[int]int, players)}
+	slowGame := game{&marble{0, nil, nil}, 1, players, make(map[int]int, players)}
 	for i := 1; i <= points*100; i++ {
 		slowGame.takeTurn(i)
 	}
@@ -36,30 +41,29 @@ func day9() {
 }
 
 func (g *game) takeTurn(round int) {
+	if round == 1 {
+		// Have to do pointer setup somehow
+		g.currentMarble.next = g.currentMarble
+		g.currentMarble.previous = g.currentMarble
+	}
+
 	if round%23 != 0 {
-		// Two marble should go 2 positions clockwise accounting for new length of circle
-		pos := g.currentMarble + 2
-		// Go back to the beginning of the "circle" if pos is too big
-		if pos >= len(g.circle) {
-			pos = pos % (len(g.circle))
-		}
-		largerCircle := make([]int, len(g.circle)+1)
-		copy(largerCircle[:pos], g.circle[:pos])
-		largerCircle[pos] = round
-		copy(largerCircle[pos+1:], g.circle[pos:])
-		g.circle = largerCircle
-		g.currentMarble = pos
+		leftMarble := g.currentMarble.next
+		rightMarble := leftMarble.next
+		newMarble := &marble{round, leftMarble, rightMarble}
+		leftMarble.next = newMarble
+		rightMarble.previous = newMarble
+
+		g.currentMarble = newMarble
 	} else {
-		pos := g.currentMarble - 7
-		for pos < 0 {
-			pos += len(g.circle)
+		marble := g.currentMarble
+		for i := 0; i < 7; i++ {
+			marble = marble.previous
 		}
-		g.scores[g.currentPlayer] += (round + g.circle[pos])
-		g.circle = append(g.circle[:pos], g.circle[pos+1:]...)
-		if pos >= len(g.circle) {
-			pos = 0
-		}
-		g.currentMarble = pos
+		g.scores[g.currentPlayer] += (round + marble.value)
+		g.currentMarble = marble.next
+		marble.previous.next = marble.next
+		marble.next.previous = marble.previous
 	}
 
 	// Finish the turn by moving to the next player
@@ -80,4 +84,13 @@ func (g *game) getWinner() (int, int) {
 	}
 
 	return player, max
+}
+
+func (g *game) printCircle(round int) {
+	curMarble := g.currentMarble
+	for i := 0; i <= round; i++ {
+		fmt.Printf("%d ", curMarble.value)
+		curMarble = curMarble.next
+	}
+	fmt.Println()
 }
