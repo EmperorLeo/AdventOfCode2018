@@ -10,7 +10,7 @@ public class Light extends Rectangle {
 	private int velocityY;
 
 	public Light(int x, int y, int velocityX, int velocityY) {
-		super(5, 5, Color.DARKRED);
+		super(3, 3, Color.DARKRED);
 		this.x = x;
 		this.y = y;
 		this.velocityX = velocityX;
