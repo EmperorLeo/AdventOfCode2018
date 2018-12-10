@@ -16,41 +16,41 @@ Day 10 - Java
 
 ## Skillsets needed
 1. Day One
-..* Arithmetic (Addition)
-..* Cycles (Looping and Iteration)
-..* Sets
+⋅⋅* Arithmetic (Addition)
+⋅⋅* Cycles (Looping and Iteration)
+⋅⋅* Sets
 2. Day Two
-..* Mapping counts / grouping
-..* String manipulation
+⋅⋅* Mapping counts / grouping
+⋅⋅* String manipulation
 3. Day Three
-..* String parsing
-..* Two dimensional arrays
+⋅⋅* String parsing
+⋅⋅* Two dimensional arrays
 4. Day Four
-..* String parsing
-..* Sorting/ordering
-..* Finding max value
+⋅⋅* String parsing
+⋅⋅* Sorting/ordering
+⋅⋅* Finding max value
 5. Day Five
-..* Stacks or recursion
-..* Character/byte comparison
-..* Finding min value
+⋅⋅* Stacks or recursion
+⋅⋅* Character/byte comparison
+⋅⋅* Finding min value
 6. Day 6
-..* String parsing
-..* Two dimensional arrays
-..* Manhattan Distance / Coordinate distance
-..* Minimum bounding box
+⋅⋅* String parsing
+⋅⋅* Two dimensional arrays
+⋅⋅* Manhattan Distance / Coordinate distance
+⋅⋅* Minimum bounding box
 7. Day 7
-..* String parsing
-..* DAGs (Directed Acyclic Graph)
-..* Topological sorting
+⋅⋅* String parsing
+⋅⋅* DAGs (Directed Acyclic Graph)
+⋅⋅* Topological sorting
 8. Day 8
-..* String parsing
-..* Recursion
-..* Trees
+⋅⋅* String parsing
+⋅⋅* Recursion
+⋅⋅* Trees
 9. Day 9
-..* Linked Lists
-..* Finding max value
+⋅⋅* Linked Lists
+⋅⋅* Finding max value
 10. Day 10
-..* String parsing
-..* Minimum bounding box
-..* Coordinate distance
-..* Graphics
+⋅⋅* String parsing
+⋅⋅* Minimum bounding box
+⋅⋅* Coordinate distance
+⋅⋅* Graphics
