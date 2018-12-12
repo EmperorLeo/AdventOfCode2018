@@ -23,14 +23,11 @@ type machine struct {
 }
 
 func day12() {
+	// Part 1
 	stateMachine := machine{}
 	stateMachine.init()
-	fmt.Print("Finished init")
-	fmt.Println()
 	for i := 1; i <= 20; i++ {
 		stateMachine.proceedNextGen()
-		fmt.Printf("Finished gen %d", i)
-		fmt.Println()
 	}
 	fmt.Printf("The total sum of all the pot IDs that contain a plant is %d.", stateMachine.getTotal())
 	fmt.Println()
@@ -85,7 +82,7 @@ func (s *machine) proceedNextGen() {
 
 	// BTW, I am assuming that none of these pots can be null, since I already added 5 buffer pots to each side at the beginning
 	if s.referencePot.plant || s.referencePot.left.plant || s.referencePot.left.left.plant {
-		s.referencePot = pot.addEmptyRightPot().addEmptyRightPot()
+		s.referencePot = s.referencePot.addEmptyRightPot().addEmptyRightPot()
 	}
 }
 
@@ -102,6 +99,21 @@ func (s *machine) getTotal() int {
 	return total
 }
 
+func (s *machine) print() {
+	pot := s.referencePot
+	output := ""
+	for pot != nil {
+		if pot.plant {
+			output = "#" + output
+		} else {
+			output = "." + output
+		}
+		pot = pot.left
+	}
+	fmt.Print(output)
+	fmt.Println()
+}
+
 func (p *pot) addEmptyRightPot() *pot {
 	p.right = &pot{p.id + 1, false, false, p, nil}
 	return p.right
@@ -113,11 +125,11 @@ func (p *pot) addEmptyLeftPot() *pot {
 }
 
 func (p *pot) determineNextGen(s *machine) {
-	stateString := fmt.Sprintf("%q%q%q%q%q",
-		s.plantMap[p.left != nil && p.left.left != nil && p.left.left.plant],
-		s.plantMap[p.left != nil && p.left.plant],
-		s.plantMap[p.plant],
-		s.plantMap[p.right != nil && p.right.plant],
-		s.plantMap[p.right != nil && p.right.right != nil && p.right.right.plant])
+	stateString := fmt.Sprintf("%s%s%s%s%s",
+		string(s.plantMap[p.left != nil && p.left.left != nil && p.left.left.plant]),
+		string(s.plantMap[p.left != nil && p.left.plant]),
+		string(s.plantMap[p.plant]),
+		string(s.plantMap[p.right != nil && p.right.plant]),
+		string(s.plantMap[p.right != nil && p.right.right != nil && p.right.right.plant]))
 	p.nextPlant = s.stateMap[stateString]
 }
