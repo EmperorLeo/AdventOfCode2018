@@ -27,8 +27,8 @@ public class Main extends Application {
 		var scene = new Scene(root);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("SOS");
-		primaryStage.setWidth(2000);
-		primaryStage.setHeight(800);
+		primaryStage.setWidth(400);
+		primaryStage.setHeight(400);
 		primaryStage.show();
 		var in = new Scanner(new FileReader("input/day10.txt"));
 		var lights = new ArrayList<Light>();
