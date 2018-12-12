@@ -41,7 +41,7 @@ func day12() {
 	// The pattern should be established after 120 runs
 	iterations := 120
 	for i := 1; i <= iterations; i++ {
-		stateMachine.proceedNextGen()
+		crazyMachine.proceedNextGen()
 	}
 	iterationsLeft := fiftyBillion - iterations
 	totalPlants := crazyMachine.getTotalPlants()
