@@ -6,6 +6,7 @@ import (
 
 const (
 	initialState = "##...#...###.#.#..#...##.###..###....#.#.###.#..#....#..#......##..###.##..#.##..##..#..#.##.####.##"
+	fiftyBillion = 50000000000
 )
 
 type pot struct {
@@ -26,10 +27,27 @@ func day12() {
 	// Part 1
 	stateMachine := machine{}
 	stateMachine.init()
-	for i := 1; i <= 20; i++ {
+	for i := 1; i <= 120; i++ {
+		fmt.Print(stateMachine.print())
+		fmt.Println()
 		stateMachine.proceedNextGen()
 	}
 	fmt.Printf("The total sum of all the pot IDs that contain a plant is %d.", stateMachine.getTotal())
+	fmt.Println()
+
+	// Part 2
+	crazyMachine := machine{}
+	crazyMachine.init()
+	// The pattern should be established after 120 runs
+	iterations := 120
+	for i := 1; i <= iterations; i++ {
+		stateMachine.proceedNextGen()
+	}
+	iterationsLeft := fiftyBillion - iterations
+	totalPlants := crazyMachine.getTotalPlants()
+	crazyMachineTotal := crazyMachine.getTotal() + (iterationsLeft * totalPlants) // Each iteration adds totalPlants number of points, because each plant shifts one to the left
+
+	fmt.Printf("The total sum of all the pot IDs in the crazy machine that contain a plant is %d.", crazyMachineTotal)
 	fmt.Println()
 }
 
@@ -99,7 +117,20 @@ func (s *machine) getTotal() int {
 	return total
 }
 
-func (s *machine) print() {
+func (s *machine) getTotalPlants() int {
+	pot := s.referencePot
+	var total int
+	for pot != nil {
+		if pot.plant {
+			total++
+		}
+		pot = pot.left
+	}
+
+	return total
+}
+
+func (s *machine) print() string {
 	pot := s.referencePot
 	output := ""
 	for pot != nil {
@@ -110,8 +141,7 @@ func (s *machine) print() {
 		}
 		pot = pot.left
 	}
-	fmt.Print(output)
-	fmt.Println()
+	return output
 }
 
 func (p *pot) addEmptyRightPot() *pot {
