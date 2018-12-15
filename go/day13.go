@@ -31,6 +31,7 @@ func day13() {
 	system.init()
 	x, y := -1, -1
 	for x < 0 && y < 0 {
+		// BUG: My input did not have this problem, but technically the carts only move one at a time
 		system.incrementFrame()
 		coords, err := system.lookForCollision()
 		if err == nil {
