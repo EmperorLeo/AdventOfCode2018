@@ -34,16 +34,13 @@ func day15() {
 	game := cavern{}
 	game.init()
 	for !game.winnerFound() {
-		// game.print()
-		// fmt.Println()
 		game.sortUnits()
 		game.incrementTurn()
-		// game.printScoreboard()
 		game.cleanUpTheDead()
-		// time.Sleep(time.Millisecond * 500)
+		// game.print()
 	}
 	winner, totalHp := game.getWinner()
-	fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d", winner, totalHp, game.turn-1, totalHp*(game.turn-1))
+	fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d", winner, totalHp, game.turn, totalHp*(game.turn))
 	fmt.Println()
 }
 
@@ -78,20 +75,26 @@ func (c *cavern) init() {
 	c.elves = elves
 	c.goblins = goblins
 	c.caveMap = caveMap
-	fmt.Printf("There are %d elves.\n", len(c.elves))
-	fmt.Printf("There are %d goblins.\n", len(c.goblins))
-	fmt.Printf("There are %d total units.\n", len(c.units))
 }
 
 func (c *cavern) incrementTurn() {
 	c.turn++
 	for _, u := range c.units {
-		// c.print()
 		if u.hp <= 0 {
-			fmt.Printf("Dead elf was not cleaned up")
-			fmt.Println()
 			// Need to deal with this if the unit has not been cleaned up yet
+			// ALSO - EDGE CASE:
+			// ####
+			// ##E#
+			// #GG#
+			// ####
+			// THE LAST UNIT IS DEAD, so should not check c.winnerFound() within the round if the last unit is dead.
 			continue
+		}
+
+		// If a full round was not completed, decrement turn for return value.
+		if c.winnerFound() {
+			c.turn--
+			break
 		}
 
 		var enemies []*unit
@@ -100,11 +103,7 @@ func (c *cavern) incrementTurn() {
 		} else {
 			enemies = c.goblins
 		}
-		u.takeTurn(c.caveMap, enemies)
-		// fmt.Printf("Unit at (%d, %d) finished turn.\n", u.x, u.y)
-		// c.print()
-		// c.printScoreboard()
-		// time.Sleep(2 * time.Second)
+		u.takeTurn(c.caveMap, enemies, c.turn)
 	}
 }
 
@@ -117,7 +116,8 @@ func (c *cavern) cleanUpTheDead() {
 	}
 
 	for _, deadUnit := range dead {
-		c.caveMap[deadUnit.y][deadUnit.x] = true
+		// Commented out code introduced a nasty bug - a unit could have moved into that spot before the dead were cleaned 😬
+		// c.caveMap[deadUnit.y][deadUnit.x] = true
 		var unitIndex int
 		for i, u := range c.units {
 			if u == deadUnit {
@@ -147,12 +147,12 @@ func (c *cavern) cleanUpTheDead() {
 }
 
 func (c *cavern) winnerFound() bool {
-	return len(c.elves) == 0 || len(c.goblins) == 0
+	return len(c.elves) == 0 || len(c.goblins) == 0 || allUnitsDead(c.elves) || allUnitsDead(c.goblins)
 }
 
 func (c *cavern) getWinner() (rune, int) {
 	var winner rune
-	if len(c.elves) == 0 {
+	if len(c.elves) == 0 || allUnitsDead(c.elves) {
 		winner = 'G'
 	} else {
 		winner = 'E'
@@ -178,9 +178,19 @@ func (c *cavern) sortUnits() {
 	})
 }
 
+func (c *cavern) printSortedUnits() {
+	fmt.Printf("Sorted order:\n")
+	for _, u := range c.units {
+		fmt.Printf("Unit at (%d, %d).\n", u.x, u.y)
+	}
+}
+
 func (c *cavern) print() {
+	fmt.Print(c.turn)
+	fmt.Println()
 	for y, row := range c.caveMap {
 		stringToPrint := ""
+		combatInfo := ""
 		for x, val := range row {
 			var curUnit *unit
 			for _, u := range c.units {
@@ -193,8 +203,10 @@ func (c *cavern) print() {
 			if curUnit != nil {
 				if curUnit.badGuy {
 					stringToPrint += "G"
+					combatInfo += fmt.Sprintf("G(%d) ", curUnit.hp)
 				} else {
 					stringToPrint += "E"
+					combatInfo += fmt.Sprintf("E(%d) ", curUnit.hp)
 				}
 			} else if val {
 				stringToPrint += "."
@@ -202,9 +214,13 @@ func (c *cavern) print() {
 				stringToPrint += "#"
 			}
 		}
+
+		stringToPrint += " " + combatInfo
+
 		fmt.Print(stringToPrint)
 		fmt.Println()
 	}
+	fmt.Println()
 }
 
 func (c *cavern) printScoreboard() {
@@ -222,7 +238,7 @@ func (c *cavern) printScoreboard() {
 	}
 }
 
-func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
+func (u *unit) takeTurn(graph [][]bool, enemies []*unit, round int) {
 	var adjacentToTarget *unit
 	var destinationCoord coordinate
 	var currentNextCoord coordinate
@@ -234,10 +250,6 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 		}
 
 		if u.isAdjacentTo(enemy) {
-			fmt.Printf("The enemy at (%d, %d) has %d hp.\n", enemy.x, enemy.y, enemy.hp)
-			if adjacentToTarget != nil {
-				fmt.Printf("Another enemy at (%d, %d) has %d hp.\n", adjacentToTarget.x, adjacentToTarget.y, adjacentToTarget.hp)
-			}
 			if adjacentToTarget == nil || adjacentToTarget != nil && compareAdjacent(enemy, adjacentToTarget) {
 				adjacentToTarget = enemy
 			}
@@ -245,8 +257,12 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 		} else if currentPathLength > 0 {
 			for _, incrementor := range coordIncrementor {
 				coord := coordinate{enemy.x + incrementor.x, enemy.y + incrementor.y}
-				nextCoord, pathLength := u.getShortestPath(coord, graph)
+				nextCoord, pathLength := u.getShortestPath(coord, graph, round == 49 && u.x == 11 && u.y == 14)
 				if pathLength != -1 {
+					if round == 49 && u.x == 11 && u.y == 14 {
+						fmt.Printf("Hello! I should be the goblin at (11,14).\n")
+						fmt.Printf("Path length of %d with next coord (%d, %d) and trying to get to (%d, %d).\n", pathLength, nextCoord.x, nextCoord.y, coord.x, coord.y)
+					}
 					if currentPathLength > pathLength || currentPathLength == pathLength && compareReadingDistance(coord, destinationCoord) {
 						destinationCoord = coord
 						currentPathLength = pathLength
@@ -285,7 +301,7 @@ func (u *unit) isAdjacentTo(enemy *unit) bool {
 	return u.x == enemy.x && int(math.Abs(float64(u.y-enemy.y))) == 1 || u.y == enemy.y && int(math.Abs(float64(u.x-enemy.x))) == 1
 }
 
-func (u *unit) getShortestPath(c coordinate, graph [][]bool) (coordinate, int) {
+func (u *unit) getShortestPath(c coordinate, graph [][]bool, printDiagnostics bool) (coordinate, int) {
 	// Implement BFS algorithm to find shortest path (modified Dijkstra's algorithm based on the distance always being 1)
 	initialCoordinate := coordinate{u.x, u.y}
 	visitedMap := map[coordinate]int{initialCoordinate: -1}
@@ -345,9 +361,12 @@ func (u *unit) getShortestPath(c coordinate, graph [][]bool) (coordinate, int) {
 					for backwardsMap[coord] != nil {
 						// Traverse backwards until you get to the first step
 						coord = *backwardsMap[coord]
-						// time.Sleep(time.Second)
-						// fmt.Printf("Backwards path: %d, %d", coord.x, coord.y)
-						// fmt.Println()
+						if printDiagnostics {
+							fmt.Printf("(%d, %d), ", coord.x, coord.y)
+						}
+					}
+					if printDiagnostics {
+						fmt.Println()
 					}
 					return coord, newDepth
 				}
@@ -406,4 +425,15 @@ func compareReadingDistance(a coordinate, b coordinate) bool {
 func remove(units []*unit, index int) []*unit {
 	units[index] = units[len(units)-1]
 	return units[:len(units)-1]
+}
+
+func allUnitsDead(units []*unit) bool {
+	unitsAreAllDead := true
+	for _, u := range units {
+		if u.hp > 0 {
+			unitsAreAllDead = false
+			break
+		}
+	}
+	return unitsAreAllDead
 }
