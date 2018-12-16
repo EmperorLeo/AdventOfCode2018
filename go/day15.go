@@ -34,16 +34,16 @@ func day15() {
 	game := cavern{}
 	game.init()
 	for !game.winnerFound() {
-		game.print()
-		fmt.Println()
+		// game.print()
+		// fmt.Println()
 		game.sortUnits()
 		game.incrementTurn()
-		game.printScoreboard()
+		// game.printScoreboard()
 		game.cleanUpTheDead()
-		// time.Sleep(2 * time.Second)
+		// time.Sleep(time.Millisecond * 500)
 	}
 	winner, totalHp := game.getWinner()
-	fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d", winner, totalHp, game.turn-1, totalHp*game.turn-1)
+	fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d", winner, totalHp, game.turn-1, totalHp*(game.turn-1))
 	fmt.Println()
 }
 
@@ -101,6 +101,9 @@ func (c *cavern) incrementTurn() {
 			enemies = c.goblins
 		}
 		u.takeTurn(c.caveMap, enemies)
+		// fmt.Printf("Unit at (%d, %d) finished turn.\n", u.x, u.y)
+		// c.print()
+		// c.printScoreboard()
 		// time.Sleep(2 * time.Second)
 	}
 }
@@ -221,7 +224,6 @@ func (c *cavern) printScoreboard() {
 
 func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 	var adjacentToTarget *unit
-	var enemyToTravelTo *unit
 	var destinationCoord coordinate
 	var currentNextCoord coordinate
 	currentPathLength := math.MaxInt32
@@ -232,6 +234,10 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 		}
 
 		if u.isAdjacentTo(enemy) {
+			fmt.Printf("The enemy at (%d, %d) has %d hp.\n", enemy.x, enemy.y, enemy.hp)
+			if adjacentToTarget != nil {
+				fmt.Printf("Another enemy at (%d, %d) has %d hp.\n", adjacentToTarget.x, adjacentToTarget.y, adjacentToTarget.hp)
+			}
 			if adjacentToTarget == nil || adjacentToTarget != nil && compareAdjacent(enemy, adjacentToTarget) {
 				adjacentToTarget = enemy
 			}
@@ -245,7 +251,6 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 						destinationCoord = coord
 						currentPathLength = pathLength
 						currentNextCoord = nextCoord
-						enemyToTravelTo = enemy
 					}
 				}
 			}
@@ -253,7 +258,7 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 	}
 	// If an adjacent enemy or a path was found
 	if adjacentToTarget != nil {
-		u.attack(adjacentToTarget)
+		u.attack(adjacentToTarget, graph)
 	} else if currentPathLength != math.MaxInt32 {
 		// Open up the area once the unit leaves
 		graph[u.y][u.x] = true
@@ -261,9 +266,17 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 		u.y = currentNextCoord.y
 		// Close up the area once the unit enters
 		graph[u.y][u.x] = false
+
 		// Handle case where unit is now adjacent to enemy
-		if u.isAdjacentTo(enemyToTravelTo) {
-			u.attack(enemyToTravelTo)
+		// Loop over enemies twice 😰
+		var enemyToAttack *unit
+		for _, enemy := range enemies {
+			if u.isAdjacentTo(enemy) && (enemyToAttack == nil || compareAdjacent(enemy, enemyToAttack)) {
+				enemyToAttack = enemy
+			}
+		}
+		if enemyToAttack != nil {
+			u.attack(enemyToAttack, graph)
 		}
 	}
 }
@@ -345,8 +358,11 @@ func (u *unit) getShortestPath(c coordinate, graph [][]bool) (coordinate, int) {
 	return coordinate{}, -1
 }
 
-func (u *unit) attack(enemy *unit) {
+func (u *unit) attack(enemy *unit, graph [][]bool) {
 	enemy.hp -= u.ap
+	if enemy.hp <= 0 {
+		graph[enemy.y][enemy.x] = true
+	}
 }
 
 func (c *coordinate) canTraverse(graph [][]bool) bool {
