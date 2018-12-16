@@ -201,13 +201,6 @@ func (c *cavern) sortUnits() {
 	})
 }
 
-func (c *cavern) printSortedUnits() {
-	fmt.Printf("Sorted order:\n")
-	for _, u := range c.units {
-		fmt.Printf("Unit at (%d, %d).\n", u.x, u.y)
-	}
-}
-
 func (c *cavern) print() {
 	fmt.Printf("ROUND %d RESULTS:", c.turn)
 	fmt.Println()
@@ -244,21 +237,6 @@ func (c *cavern) print() {
 		fmt.Println()
 	}
 	fmt.Println()
-}
-
-func (c *cavern) printScoreboard() {
-	fmt.Printf("ROUNDNUMBER: %d", c.turn)
-	fmt.Println()
-	for _, u := range c.units {
-		var team string
-		if u.badGuy {
-			team = "Goblin"
-		} else {
-			team = "Elf"
-		}
-		fmt.Printf("%s with hp %d", team, u.hp)
-		fmt.Println()
-	}
 }
 
 func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
