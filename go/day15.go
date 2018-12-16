@@ -31,20 +31,43 @@ type coordinateDepth struct {
 }
 
 func day15() {
+	// Part 1
 	game := cavern{}
-	game.init()
+	elfAttackPower := 3
+	game.init(elfAttackPower)
 	for !game.winnerFound() {
 		game.sortUnits()
 		game.incrementTurn()
 		game.cleanUpTheDead()
-		// game.print()
+		game.print()
 	}
 	winner, totalHp := game.getWinner()
 	fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d", winner, totalHp, game.turn, totalHp*(game.turn))
 	fmt.Println()
+
+	// Part 2
+	elvesWin := false
+	for !elvesWin {
+		elfAttackPower++
+		game = cavern{}
+		game.init(elfAttackPower)
+		initialElfCount := len(game.elves)
+		for !game.winnerFound() {
+			game.sortUnits()
+			game.incrementTurn()
+			game.cleanUpTheDead()
+		}
+		winner, totalHp = game.getWinner()
+		fmt.Printf("Team %q won with outcome (totalHp * rounds) = %d * %d = %d. Elves had %d AP.", winner, totalHp, game.turn, totalHp*(game.turn), elfAttackPower)
+		fmt.Println()
+
+		if winner == 'E' && len(game.elves) == initialElfCount {
+			elvesWin = true
+		}
+	}
 }
 
-func (c *cavern) init() {
+func (c *cavern) init(elfAttackPower int) {
 	lines := readFile("../input/day15.txt")
 	caveMap := make([][]bool, len(lines))
 	units := []*unit{}
@@ -60,7 +83,7 @@ func (c *cavern) init() {
 				caveMap[y][x] = true
 			case 'E':
 				caveMap[y][x] = false
-				elf := unit{x, y, 200, 3, false}
+				elf := unit{x, y, 200, elfAttackPower, false}
 				elves = append(elves, &elf)
 				units = append(units, &elf)
 			case 'G':
@@ -103,7 +126,7 @@ func (c *cavern) incrementTurn() {
 		} else {
 			enemies = c.goblins
 		}
-		u.takeTurn(c.caveMap, enemies, c.turn)
+		u.takeTurn(c.caveMap, enemies)
 	}
 }
 
@@ -186,7 +209,7 @@ func (c *cavern) printSortedUnits() {
 }
 
 func (c *cavern) print() {
-	fmt.Print(c.turn)
+	fmt.Printf("ROUND %d RESULTS:", c.turn)
 	fmt.Println()
 	for y, row := range c.caveMap {
 		stringToPrint := ""
@@ -238,7 +261,7 @@ func (c *cavern) printScoreboard() {
 	}
 }
 
-func (u *unit) takeTurn(graph [][]bool, enemies []*unit, round int) {
+func (u *unit) takeTurn(graph [][]bool, enemies []*unit) {
 	var adjacentToTarget *unit
 	var destinationCoord coordinate
 	var currentNextCoord coordinate
@@ -257,12 +280,8 @@ func (u *unit) takeTurn(graph [][]bool, enemies []*unit, round int) {
 		} else if currentPathLength > 0 {
 			for _, incrementor := range coordIncrementor {
 				coord := coordinate{enemy.x + incrementor.x, enemy.y + incrementor.y}
-				nextCoord, pathLength := u.getShortestPath(coord, graph, round == 49 && u.x == 11 && u.y == 14)
+				nextCoord, pathLength := u.getShortestPath(coord, graph)
 				if pathLength != -1 {
-					if round == 49 && u.x == 11 && u.y == 14 {
-						fmt.Printf("Hello! I should be the goblin at (11,14).\n")
-						fmt.Printf("Path length of %d with next coord (%d, %d) and trying to get to (%d, %d).\n", pathLength, nextCoord.x, nextCoord.y, coord.x, coord.y)
-					}
 					if currentPathLength > pathLength || currentPathLength == pathLength && compareReadingDistance(coord, destinationCoord) {
 						destinationCoord = coord
 						currentPathLength = pathLength
@@ -301,7 +320,7 @@ func (u *unit) isAdjacentTo(enemy *unit) bool {
 	return u.x == enemy.x && int(math.Abs(float64(u.y-enemy.y))) == 1 || u.y == enemy.y && int(math.Abs(float64(u.x-enemy.x))) == 1
 }
 
-func (u *unit) getShortestPath(c coordinate, graph [][]bool, printDiagnostics bool) (coordinate, int) {
+func (u *unit) getShortestPath(c coordinate, graph [][]bool) (coordinate, int) {
 	// Implement BFS algorithm to find shortest path (modified Dijkstra's algorithm based on the distance always being 1)
 	initialCoordinate := coordinate{u.x, u.y}
 	visitedMap := map[coordinate]int{initialCoordinate: -1}
@@ -361,12 +380,6 @@ func (u *unit) getShortestPath(c coordinate, graph [][]bool, printDiagnostics bo
 					for backwardsMap[coord] != nil {
 						// Traverse backwards until you get to the first step
 						coord = *backwardsMap[coord]
-						if printDiagnostics {
-							fmt.Printf("(%d, %d), ", coord.x, coord.y)
-						}
-					}
-					if printDiagnostics {
-						fmt.Println()
 					}
 					return coord, newDepth
 				}
