@@ -303,63 +303,27 @@ func (u *unit) getShortestPath(c coordinate, graph [][]bool) (coordinate, int) {
 	initialCoordinate := coordinate{u.x, u.y}
 	visitedMap := map[coordinate]int{initialCoordinate: -1}
 	backwardsMap := map[coordinate]*coordinate{}
-	queue := []coordinateDepth{}
-	top := coordinate{u.x, u.y - 1}
-	left := coordinate{u.x - 1, u.y}
-	right := coordinate{u.x + 1, u.y}
-	bottom := coordinate{u.x, u.y + 1}
-	// Kinda hacky so the backwards map ends up at these nodes
-	if top.canTraverse(graph) {
-		queue = append(queue, coordinateDepth{top, 1})
-		visitedMap[top] = 1
-		if top == c {
-			return top, 1
-		}
-	}
-	if left.canTraverse(graph) {
-		queue = append(queue, coordinateDepth{left, 1})
-		visitedMap[left] = 1
-		if left == c {
-			return left, 1
-		}
-	}
-	if right.canTraverse(graph) {
-		queue = append(queue, coordinateDepth{right, 1})
-		visitedMap[right] = 1
-		if right == c {
-			return right, 1
-		}
-	}
-	if bottom.canTraverse(graph) {
-		queue = append(queue, coordinateDepth{bottom, 1})
-		visitedMap[bottom] = 1
-		if bottom == c {
-			return bottom, 1
-		}
-	}
+	queue := []coordinateDepth{coordinateDepth{initialCoordinate, 0}}
 
 	for len(queue) > 0 {
 		queueItem := queue[0]
-		// fmt.Printf("Testing coordinate")
 		queue = queue[1:]
 		newDepth := queueItem.depth + 1
 		for _, incrementor := range coordIncrementor {
 			coord := coordinate{queueItem.c.x + incrementor.x, queueItem.c.y + incrementor.y}
-			// fmt.Print(coord.canTraverse(graph))
-			// fmt.Println()
 			if coord.canTraverse(graph) && visitedMap[coord] == 0 {
 				visitedMap[coord] = newDepth
 				queue = append(queue, coordinateDepth{coord, newDepth})
 				backwardsMap[coord] = &queueItem.c
 
 				if coord == c {
-					// fmt.Printf("Unit wants to go to %d, %d", coord.x, coord.y)
-					// fmt.Println()
+					var previous *coordinate
 					for backwardsMap[coord] != nil {
 						// Traverse backwards until you get to the first step
+						previous = &coordinate{coord.x, coord.y}
 						coord = *backwardsMap[coord]
 					}
-					return coord, newDepth
+					return *previous, newDepth
 				}
 			}
 		}
