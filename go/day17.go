@@ -105,8 +105,6 @@ func (g *ground) startFlow() {
 		char := g.grid[y][x]
 		if char == '.' {
 			g.grid[y][x] = '|'
-			// fmt.Print(y)
-			// fmt.Println()
 			if len(g.grid) <= y+1 || g.grid[y+1][x] == '|' {
 				// Out of bounds, or just hit more running water, so get the next item on the stack
 			} else if g.grid[y+1][x] == '#' || g.grid[y+1][x] == '~' {
