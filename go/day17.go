@@ -12,7 +12,6 @@ type xy struct {
 }
 
 type ground struct {
-	reservoir     xy
 	grid          [][]rune
 	xOffset, minY int
 	stk           stack
