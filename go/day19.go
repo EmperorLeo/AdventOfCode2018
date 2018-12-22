@@ -17,7 +17,7 @@ func day19() {
 	}
 	fmt.Printf("IP = %d\n", pc)
 	cpu.Init(6, pc, instructions)
-	for cpu.ExecuteInstruction(false) {
+	for cpu.ExecuteInstruction(true) {
 	}
 
 	// Part 1
