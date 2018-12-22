@@ -79,4 +79,7 @@ func elfProg() {
 	// seti 1 3, go back to instruction 1, then 2.  Does this mean i have to fucking repeat the first while loop?
 	// Is this a double for loop???
 
+	// mul3 3 3 3
+	// ^^^ I'm asuming this breaks the program. Back at instruction 16.
+	// At the beginning, instruction 16 got incremented immediately.  Now register 3 is about to get fucked up with a value of 256.
 }
