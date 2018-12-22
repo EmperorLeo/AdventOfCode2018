@@ -41,7 +41,8 @@ func elfProg() int {
 
 	// Ok, it looks like this little snippet just adds all the factors of the "incrementor" to the return value.
 	// Maybe I should look at all the values i needed to multiply to get this awful number LOL.
-
+	// Nvm, i'm gonna cheat and use an online calculator
+	// 1 + 3 + 71 + 213 + 49537 + 148611 + 3517127 + 10551381 = 14266944
 	for i := 1; i <= incrementor; i++ {
 		for j := 1; j < incrementor; j++ {
 			intermediate := i * j
