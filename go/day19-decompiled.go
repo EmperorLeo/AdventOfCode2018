@@ -64,12 +64,19 @@ func elfProg() {
 	}
 
 	// IF VALUE 2 equals 1, WE ARE GOING TO SKIP THE NEXT INSTRUCTION.
-	// seti 2 // UH WHAT, go back to instruction 2, then 3??? While loop????
+	// seti 2 3 // UH WHAT, go back to instruction 2, then 3??? While loop????
 	// Ok, here is the first while loop from instruction 3 -> instruction 11
 
 	valueThree++
 	// Lol, now value three has to be bigger than value one
 	if valueThree > valueOne {
-
+		valueTwo = 1
+	} else {
+		valueTwo = 0
 	}
+
+	// IF VALUE 2 equals 1, WE ARE GOING TO SKIP THE NEXT INSTRUCTION.
+	// seti 1 3, go back to instruction 1, then 2.  Does this mean i have to fucking repeat the first while loop?
+	// Is this a double for loop???
+
 }
