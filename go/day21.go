@@ -17,16 +17,6 @@ func day23() {
 	// Register 1
 	var comparison int
 
-	// for {
-	// 	// Instruction 6
-	// 	valueOne = 65536 | comparison // 2^16
-	// 	comparison = 3798839
-	// 	for {
-
-	// 	}
-
-	// }
-
 	// Instruction 6
 	valueOne = 65536 | comparison // 2^16 - Again, valueOne is register 4.... LOL
 	comparison = 3798839          // Insturction 7 - set immediate to register 1
@@ -38,14 +28,7 @@ func day23() {
 	comparison *= 65899        // idk, but this is instruction 11
 	comparison &= 16777215     // again, destroys all bits greater than 2^24 - 1	Instruction 12
 
-	if valueOne <= 255 { // Instruction 13 - All of the bits in valueOne greater than 255 are zeroed out
-		// skip to instruction 27 then 28
-		if myValue == comparison { // Ok, looks like you need this program to run a few times until comparison is big enough to get rid of the 17th bit
-			// terminate program
-			return
-		}
-		// Go back to instruction 5, then 6 - GOTO: 6.  What variables are kept intact initially? (out of scope) - valueOne, comparison, valueThree
-	} else {
+	if valueOne > 255 { // Instruction 13 - All of the bits in valueOne greater than 255 are zeroed out
 		// variable i is in register 2
 		newValueOne := 0
 		for i := 1; i <= valueOne; newValueOne++ {
@@ -57,5 +40,12 @@ func day23() {
 		// Go to instruction 25 then 26
 		valueOne = newValueOne
 		// Go to instruction 7 then 8
+	} else {
+		// skip to instruction 27 then 28
+		if myValue == comparison { // Ok, looks like you need this program to run a few times until comparison is big enough to get rid of the 17th bit
+			// terminate program
+			return
+		}
+		// Go back to instruction 5, then 6 - GOTO: 6.  What variables are kept intact initially? (out of scope) - valueOne, comparison, valueThree
 	}
 }
