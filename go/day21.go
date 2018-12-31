@@ -16,8 +16,6 @@ func day23() {
 	var valueOne int
 	// Register 1
 	var comparison int
-	// Register 2
-	var valueThree int
 
 	// for {
 	// 	// Instruction 6
@@ -48,22 +46,16 @@ func day23() {
 		}
 		// Go back to instruction 5, then 6 - GOTO: 6.  What variables are kept intact initially? (out of scope) - valueOne, comparison, valueThree
 	} else {
-		for {
-			// Instruction 19
-			valueThree *= 256
-			if valueOne >= valueThree {
-				break
-			}
-			// Go to instruction 24
-			// Increment value two by 1
-			valueTwo++
-			// go back to instruction 17 then 18
-			valueThree = valueTwo + 1
-			// loop back to instruction 19
+		// variable i is in register 2
+		newValueOne := 0
+		for i := 1; i <= valueOne; newValueOne++ {
+			// This basically adds 1, and shifts everything to the left by 8 digits
+			i++      // Instruction 18
+			i *= 256 // LEFT SHIFT 8 DIGITS, 256 = 2^8, this is really valueThree << 8
 		}
 
 		// Go to instruction 25 then 26
-		valueOne = valueTwo
+		valueOne = newValueOne
 		// Go to instruction 7 then 8
 	}
 }
