@@ -30,11 +30,10 @@ func day23() {
 
 	if valueOne > 255 { // Instruction 13 - All of the bits in valueOne greater than 255 are zeroed out
 		// variable i is in register 2
-		newValueOne := 0
+		newValueOne := 0 // register 5
 		for i := 1; i <= valueOne; newValueOne++ {
-			// This basically adds 1, and shifts everything to the left by 8 digits
-			i++      // Instruction 18
-			i *= 256 // LEFT SHIFT 8 DIGITS, 256 = 2^8, this is really valueThree << 8
+			i += newValueOne + 1 // Instruction 18
+			i *= 256             // LEFT SHIFT 8 DIGITS, 256 = 2^8, this is really valueThree << 8	Instruction 19
 		}
 
 		// Go to instruction 25 then 26
