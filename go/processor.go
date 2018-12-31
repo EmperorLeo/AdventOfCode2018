@@ -18,6 +18,7 @@ type Processor struct {
 	pc            int
 	opcodeMap     map[int]int
 	opcodeNameMap map[string]int
+	ioDevice      []int
 }
 
 // Instruction represents a 4 digit instruction for the Processor to process
@@ -29,6 +30,7 @@ type Instruction struct {
 // Init the processor with registers and opcodes and stuff
 func (p *Processor) Init(numRegisters int, pc int, instructions []Instruction) {
 	p.registers = make(map[int]*Register, numRegisters)
+	p.ioDevice = []int{}
 	p.pc = pc
 	for i := 0; i < numRegisters; i++ {
 		p.registers[i] = &Register{}
@@ -108,6 +110,7 @@ func (p *Processor) Init(numRegisters int, pc int, instructions []Instruction) {
 	}
 	p.opcodes[16] = func(a int, b int, c int) { // prtr - Leo's specialized printing opcode
 		fmt.Printf("Request to print register %d. Value = %d.\n", a, p.registers[a].value)
+		p.ioDevice = append(p.ioDevice, p.registers[a].value)
 	}
 	p.opcodeNameMap = map[string]int{
 		"addr": 0,
