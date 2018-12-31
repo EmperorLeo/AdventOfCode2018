@@ -7,10 +7,6 @@ import (
 
 type stack []*xy
 
-type xy struct {
-	x, y int
-}
-
 type ground struct {
 	grid          [][]rune
 	xOffset, minY int
