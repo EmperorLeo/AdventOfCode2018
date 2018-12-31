@@ -33,7 +33,7 @@ func (p *Processor) Init(numRegisters int, pc int, instructions []Instruction) {
 	for i := 0; i < numRegisters; i++ {
 		p.registers[i] = &Register{}
 	}
-	p.opcodes = make([]Opcode, 16)
+	p.opcodes = make([]Opcode, 17)
 	p.opcodes[0] = func(a int, b int, c int) { // addr
 		p.registers[c].value = p.registers[a].value + p.registers[b].value
 	}
@@ -106,6 +106,9 @@ func (p *Processor) Init(numRegisters int, pc int, instructions []Instruction) {
 			p.registers[c].value = 0
 		}
 	}
+	p.opcodes[16] = func(a int, b int, c int) { // prtr - Leo's specialized printing opcode
+		fmt.Printf("Request to print register %d. Value = %d.\n", a, p.registers[a].value)
+	}
 	p.opcodeNameMap = map[string]int{
 		"addr": 0,
 		"addi": 1,
@@ -122,7 +125,8 @@ func (p *Processor) Init(numRegisters int, pc int, instructions []Instruction) {
 		"gtrr": 12,
 		"eqir": 13,
 		"eqri": 14,
-		"eqrr": 15}
+		"eqrr": 15,
+		"prtr": 16}
 	p.instructions = instructions
 }
 
