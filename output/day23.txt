@@ -1,0 +1,3 @@
+The strongest nanobot is (-66447882, 62624909, 13341547) with a radius of 99279362 and a reach of 442.
+The best point that I have discovered is (19992232, 58718915, 22274751).  It is affected by 967 nanobots.
+19992232 + 58718915 + 22274751 = 100985898

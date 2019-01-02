@@ -4,6 +4,10 @@ type xy struct {
 	x, y int
 }
 
+type xyz struct {
+	x, y, z int
+}
+
 type xyNode struct {
 	c xy
 	d int
