@@ -8,6 +8,10 @@ type xyz struct {
 	x, y, z int
 }
 
+type xyzr struct {
+	x, y, z, r int
+}
+
 type xyNode struct {
 	c xy
 	d int
